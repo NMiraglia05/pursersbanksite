@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
-app.secret_key = 'replace_with_a_secure_random_key'
 
 item_lookup = {
     'coal': {'points': 1, 'cat': 'mining'},
@@ -21,8 +20,8 @@ item_lookup = {
     'spell crystal': {'points': 4, 'cat': 'mining'},
     'bone': {'points': 1, 'cat': 'hunting'},
     'feathers': {'points': 1, 'cat': 'hunting'},
-    'honey': {'points': 1, 'cat': 'hunting'},
-    'food': {'points': 1, 'cat': 'hunting'},
+    'honey': {'points': 1, 'cat': 'hunting', 'expiration': '1 month'},
+    'food': {'points': 1, 'cat': 'hunting', 'expiration': '1 month'},
     'soft pelt': {'points': 2, 'cat': 'hunting'},
     'demon blood': {'points': 2, 'cat': 'hunting'},
     'large hide': {'points': 3, 'cat': 'hunting'},
@@ -42,14 +41,9 @@ item_lookup = {
 
 def categorize_items(items):
     categories = {}
-    for item, info in items.items():
-        cat = info['cat']
-        if cat not in categories:
-            categories[cat] = []
-        categories[cat].append({'name': item, 'points': info['points']})
-    # Sort items in each category by points
-    for cat_items in categories.values():
-        cat_items.sort(key=lambda x: x['points'])
+    for name, data in sorted(items.items(), key=lambda x: x[1]['points']):
+        cat = data['cat']
+        categories.setdefault(cat, []).append((name, data))
     return categories
 
 @app.route('/')
@@ -62,24 +56,21 @@ def order():
     if request.method == 'POST':
         order_data = {}
         for key, value in request.form.items():
-            if key.startswith('qty-'):
-                item_name = key[4:]
-                qty = int(value)
-                if qty > 0:
-                    order_data[item_name] = qty
-        session['order_data'] = order_data
-        return redirect(url_for('confirm_order'))
-
+            if key.endswith('_qty') and value.isdigit() and int(value) > 0:
+                item_name = key.replace('_qty', '')
+                order_data[item_name] = int(value)
+        return render_template('confirm.html', order_data=order_data, item_lookup=item_lookup)
     return render_template('order.html', categories=categories)
 
-@app.route('/confirm', methods=['GET', 'POST'])
+@app.route('/confirm', methods=['POST'])
 def confirm_order():
-    order_data = session.get('order_data', {})
+    order_data = {}
+    for key, value in request.form.items():
+        if key.endswith('_qty') and value.isdigit() and int(value) > 0:
+            item_name = key.replace('_qty', '')
+            order_data[item_name] = int(value)
     total_points = sum(item_lookup[item]['points'] * qty for item, qty in order_data.items())
-    if request.method == 'POST':
-        # Here you would handle final submission
-        return "Order confirmed! (not functional yet)"
-    return render_template('confirm.html', order_data=order_data, total_points=total_points)
+    return render_template('confirm.html', order_data=order_data, total_points=total_points, item_lookup=item_lookup)
 
 if __name__ == '__main__':
     app.run(debug=True)
