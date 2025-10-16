@@ -7,8 +7,9 @@
         body { font-family: Arial, sans-serif; margin: 20px; }
         .category { border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 5px; }
         .category h2 { margin-top: 0; }
-        .item { margin-left: 20px; }
-        button { margin-top: 10px; }
+        .item { margin-left: 20px; margin-bottom: 5px; }
+        select { margin-left: 10px; display: none; } /* hidden by default */
+        button { margin-top: 10px; padding: 5px 10px; }
     </style>
 </head>
 <body>
@@ -20,14 +21,34 @@
             {% for item in items %}
             <div class="item">
                 <label>
-                    <input type="checkbox" name="{{ item.name }}">
-                    {{ item.name }} ({{ item.points }} pts)
+                    <input type="checkbox" class="item-checkbox" data-target="qty-{{ loop.index0 }}-{{ cat }}">{{ item.name }} ({{ item.points }} pts)
                 </label>
+                <select name="{{ item.name }}" id="qty-{{ loop.index0 }}-{{ cat }}" disabled>
+                    {% for i in range(1, 11) %}
+                    <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
             </div>
             {% endfor %}
         </div>
         {% endfor %}
         <button type="submit">Submit Order</button>
     </form>
+
+    <script>
+        document.querySelectorAll('.item-checkbox').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const select = document.getElementById(this.dataset.target);
+                if (this.checked) {
+                    select.style.display = 'inline-block';
+                    select.disabled = false;
+                } else {
+                    select.style.display = 'none';
+                    select.disabled = true;  // disabled fields are not submitted
+                    select.value = '1';       // reset to 1
+                }
+            });
+        });
+    </script>
 </body>
 </html>
