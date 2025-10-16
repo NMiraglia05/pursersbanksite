@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Order Confirmation</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    h1 { margin-bottom: 20px; }
+  </style>
 </head>
 <body>
   <h1>Order Confirmation</h1>
   {% if order_data %}
     <ul>
       {% for item, qty in order_data.items() %}
-        <li>{{ item }} — Quantity: {{ qty }}</li>
+        <li>{{ item|capitalize }} — Quantity: {{ qty }} ({{ item_lookup[item].points }} points each)</li>
       {% endfor %}
     </ul>
   {% else %}
-    <p>No items ordered.</p>
+    <p>No items selected.</p>
   {% endif %}
-  <a href="/">Back to order</a>
+  <a href="/order"><button>Back to Order Page</button></a>
 </body>
 </html>
