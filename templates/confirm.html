@@ -1,25 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Confirm Order</title>
 </head>
 <body>
     <h1>Confirm Your Order</h1>
-    {% if order_data %}
-        <ul>
+    <ul>
         {% for item, qty in order_data.items() %}
-            <li>{{ item }}: {{ qty }} ({{ item_lookup[item]['points'] * qty }} pts)</li>
+        <li>{{ item }}: {{ qty }} ({{ item_lookup[item]['points'] * qty }} pts)</li>
         {% endfor %}
-        </ul>
-        <p>Total Points: {{ total_points }}</p>
-    {% else %}
-        <p>No items selected.</p>
-    {% endif %}
-    <form method="POST">
-        <button type="submit">Confirm Order</button>
-    </form>
-    <form action="{{ url_for('order') }}">
+    </ul>
+
+    <p><strong>Total Points:</strong> 
+        {{ total_points or (order_data | map(attribute=0) | list | length and
+        order_data | sum(attribute='points')) }}
+    </p>
+
+    <form method="get" action="/order">
         <button type="submit">Back</button>
+    </form>
+
+    <form method="post" action="/finalize">
+        <button type="submit">Confirm Order</button>
     </form>
 </body>
 </html>
