@@ -5,17 +5,20 @@
   <title>Order Confirmation</title>
   <style>
     body { font-family: Arial; margin: 20px; }
-    h1 { margin-bottom: 20px; }
   </style>
 </head>
 <body>
   <h1>Order Confirmation</h1>
   {% if order_data %}
     <ul>
-      {% for item, qty in order_data.items() %}
-        <li>{{ item|capitalize }} — Quantity: {{ qty }} ({{ item_lookup[item].points }} points each)</li>
+      {% set total = 0 %}
+      {% for item,qty in order_data.items() %}
+        {% set points = item_lookup[item].points * qty %}
+        {% set total = total + points %}
+        <li>{{ item|capitalize }} — Quantity: {{ qty }} ({{ item_lookup[item].points }} pts each, {{ points }} total)</li>
       {% endfor %}
     </ul>
+    <p><strong>Total Points Spent:</strong> {{ total }}</p>
   {% else %}
     <p>No items selected.</p>
   {% endif %}
