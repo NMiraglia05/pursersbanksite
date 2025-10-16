@@ -39,16 +39,15 @@ item_lookup = {
     'zye blood parasites': {'points': 4, 'cat': 'black_market'}
 }
 
-# Helper: Group items by category and sort by point value
 def organize_items(data):
-    categories = {}
-    for name, info in data.items():
-        cat = info['cat']
+    categories={}
+    for name,info in data.items():
+        cat=info['cat']
         if cat not in categories:
-            categories[cat] = []
-        categories[cat].append((name, info))
+            categories[cat]=[]
+        categories[cat].append((name,info))
     for cat in categories:
-        categories[cat].sort(key=lambda x: x[1]['points'])
+        categories[cat].sort(key=lambda x:x[1]['points'])
     return categories
 
 @app.route("/")
@@ -57,17 +56,17 @@ def index():
 
 @app.route("/order")
 def order():
-    categories = organize_items(item_lookup)
-    return render_template("order.html", categories=categories)
+    categories=organize_items(item_lookup)
+    return render_template("order.html",categories=categories)
 
-@app.route("/confirm", methods=["POST"])
+@app.route("/confirm",methods=["POST"])
 def confirm():
-    order_data = {}
-    for key, value in request.form.items():
-        if key.startswith("qty_") and value.isdigit() and int(value) > 0:
-            item = key.replace("qty_", "")
-            order_data[item] = int(value)
-    return render_template("confirm.html", order_data=order_data, item_lookup=item_lookup)
+    order_data={}
+    for key,value in request.form.items():
+        if key.startswith("qty_") and value.isdigit():
+            item=key.replace("qty_","")
+            order_data[item]=int(value)
+    return render_template("confirm.html",order_data=order_data,item_lookup=item_lookup)
 
-if __name__ == "__main__":
+if __name__=="__main__":
     app.run(debug=True)
