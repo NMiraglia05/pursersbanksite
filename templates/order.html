@@ -3,32 +3,30 @@
 <head>
     <title>Place Order</title>
     <style>
-        .item-box { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-        .qty-select { display: none; }
-    </style>
-    <script>
-        function toggleQty(checkbox) {
-            var select = document.getElementById('qty-' + checkbox.id);
-            if (checkbox.checked) {
-                select.style.display = 'inline-block';
-            } else {
-                select.style.display = 'none';
-                select.value = 1; // reset to 1 when unchecked
-            }
+        .category-box {
+            border: 1px solid #333;
+            padding: 10px;
+            margin: 10px;
         }
-    </script>
+        .qty-select {
+            display: none;
+            margin-left: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Purser's Bank - Place Your Order</h1>
+    <h1>Place Your Order</h1>
     <form method="POST">
         {% for cat, items in categories.items() %}
-            <div class="item-box">
+            <div class="category-box">
                 <h2>{{ cat|capitalize }}</h2>
-                {% for item, points in items %}
-                    <input type="checkbox" id="{{ item }}" name="{{ item }}" onclick="toggleQty(this)">
-                    <label for="{{ item }}">{{ item }} ({{ points }} points)</label>
-                    <select name="{{ item }}" id="qty-{{ item }}" class="qty-select">
-                        {% for i in range(1,11) %}
+                {% for item in items %}
+                    <label>
+                        <input type="checkbox" class="item-checkbox" data-target="qty-{{ item.name }}">
+                        {{ item.name }} ({{ item.points }} pts)
+                    </label>
+                    <select name="qty-{{ item.name }}" id="qty-{{ item.name }}" class="qty-select">
+                        {% for i in range(1, 11) %}
                             <option value="{{ i }}">{{ i }}</option>
                         {% endfor %}
                     </select>
@@ -38,5 +36,21 @@
         {% endfor %}
         <button type="submit">Submit Order</button>
     </form>
+
+    <script>
+        document.querySelectorAll('.item-checkbox').forEach(cb => {
+            cb.addEventListener('change', function() {
+                const targetId = this.getAttribute('data-target');
+                const dropdown = document.getElementById(targetId);
+                if(this.checked) {
+                    dropdown.style.display = 'inline';
+                    dropdown.value = 1;
+                } else {
+                    dropdown.style.display = 'none';
+                    dropdown.value = 0;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
