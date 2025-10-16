@@ -1,17 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Place Order</title>
+    <meta charset="UTF-8">
+    <title>Purser's Bank - Order</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .category { border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 5px; }
+        .category h2 { margin-top: 0; }
+        .item { margin-left: 20px; }
+        button { margin-top: 10px; }
+    </style>
 </head>
 <body>
     <h1>Place Your Order</h1>
     <form method="POST">
-        {% for category, items in categories.items() %}
-            <h2>{{ category.title() }}</h2>
-            {% for item, points in items %}
-                <label>{{ item }} ({{ points }} points)</label>
-                <input type="number" name="{{ item }}" min="0" value="0"><br>
+        {% for cat, items in categories.items() %}
+        <div class="category">
+            <h2>{{ cat.title() }}</h2>
+            {% for item in items %}
+            <div class="item">
+                <label>
+                    <input type="checkbox" name="{{ item.name }}">
+                    {{ item.name }} ({{ item.points }} pts)
+                </label>
+            </div>
             {% endfor %}
+        </div>
         {% endfor %}
         <button type="submit">Submit Order</button>
     </form>
