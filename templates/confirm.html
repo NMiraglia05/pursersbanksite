@@ -5,24 +5,20 @@
 </head>
 <body>
     <h1>Confirm Your Order</h1>
-    
+    {% set total_points = 0 %}
     <ul>
-    {% for item, qty in selected_items.items() %}
-        <li>{{ item }}: {{ qty }}</li>
-    {% endfor %}
-    </ul>
-    
-    <p><strong>Total Points:</strong> {{ total_points }}</p>
-    
-    <form method="POST" action="{{ url_for('submit_order') }}">
-        {% for item, qty in selected_items.items() %}
-            <input type="hidden" name="{{ item }}" value="{{ qty }}">
+        {% for item, qty in order.items() %}
+            {% set points = item_lookup[item]['points'] %}
+            {% set total_points = total_points + (points * qty) %}
+            <li>{{ item }} x{{ qty }} ({{ points * qty }} points)</li>
         {% endfor %}
-        <button type="submit">Confirm Order</button>
-    </form>
-    
-    <form action="{{ url_for('order') }}">
+    </ul>
+    <p><strong>Total Points:</strong> {{ total_points }}</p>
+    <form action="/order" method="get" style="display:inline;">
         <button type="submit">Back</button>
+    </form>
+    <form action="#" method="post" style="display:inline;">
+        <button type="submit">Confirm Order</button>
     </form>
 </body>
 </html>
