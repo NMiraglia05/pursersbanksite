@@ -7,21 +7,23 @@
 <body>
     <h1>Confirm Your Order</h1>
     <ul>
+        {% set total_points = 0 %}
         {% for item, qty in order_data.items() %}
-        <li>{{ item }}: {{ qty }} ({{ item_lookup[item]['points'] * qty }} pts)</li>
+            {% if qty|int > 0 %}
+                {% set item_points = item_lookup[item]['points'] * qty|int %}
+                <li>{{ item }} — Qty: {{ qty }} ({{ item_points }} pts)</li>
+                {% set total_points = total_points + item_points %}
+            {% endif %}
         {% endfor %}
     </ul>
 
-    <p><strong>Total Points:</strong> 
-        {{ total_points or (order_data | map(attribute=0) | list | length and
-        order_data | sum(attribute='points')) }}
-    </p>
+    <p><strong>Total Points:</strong> {{ total_points }}</p>
 
-    <form method="get" action="/order">
+    <form action="/order" method="get" style="display:inline;">
         <button type="submit">Back</button>
     </form>
 
-    <form method="post" action="/finalize">
+    <form action="/confirm_order" method="post" style="display:inline;">
         <button type="submit">Confirm Order</button>
     </form>
 </body>
