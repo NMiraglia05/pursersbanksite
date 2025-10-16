@@ -1,58 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Order Items</title>
-    <style>
-        .category-box {
-            border: 1px solid #888;
-            border-radius: 10px;
-            padding: 10px;
-            margin: 15px;
-        }
-        .item-line {
-            margin: 5px 0;
-        }
-        .quantity-select {
-            display: none;
-            margin-left: 10px;
-        }
-    </style>
-    <script>
-        function toggleQuantity(checkbox, id) {
-            const dropdown=document.getElementById(id);
-            if(checkbox.checked){
-                dropdown.style.display='inline';
-            } else {
-                dropdown.style.display='none';
-                dropdown.value='0';
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <title>Order Page</title>
 </head>
 <body>
-    <h1>Place Your Order</h1>
-    <form method="post" action="/order">
-        {% for category, items in categories.items() %}
-        <div class="category-box">
-            <h2>{{ category | capitalize }}</h2>
-            {% for name, data in items %}
-            <div class="item-line">
-                <label>
-                    <input type="checkbox" name="{{ name }}" onchange="toggleQuantity(this, '{{ name }}_qty')">
-                    {{ name }} ({{ data.points }} pts)
-                </label>
-                <select name="{{ name }}_qty" id="{{ name }}_qty" class="quantity-select">
-                    <option value="0">0</option>
-                    {% for i in range(1, 11) %}
-                    <option value="{{ i }}">{{ i }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            {% endfor %}
-        </div>
-        {% endfor %}
-        <button type="submit">Review Order</button>
-    </form>
+  <h1>Place Your Order</h1>
+  <form action="/order" method="post">
+    {% for item in items %}
+      <div>
+        <label>{{ item.name }} (${{ item.price }})</label>
+        <input type="number" name="qty_{{ item.name }}" min="0" placeholder="0">
+      </div>
+    {% endfor %}
+    <button type="submit">Submit Order</button>
+  </form>
 </body>
 </html>
