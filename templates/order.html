@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Place Order</title>
+</head>
+<body>
+    <h1>Place Your Order</h1>
+    <form method="POST">
+        {% for category, items in categories.items() %}
+            <h2>{{ category.title() }}</h2>
+            {% for item, points in items %}
+                <label>{{ item }} ({{ points }} points)</label>
+                <input type="number" name="{{ item }}" min="0" value="0"><br>
+            {% endfor %}
+        {% endfor %}
+        <button type="submit">Submit Order</button>
+    </form>
+</body>
+</html>
