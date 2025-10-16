@@ -1,30 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Confirm Order</title>
+  <meta charset="UTF-8">
+  <title>Order Confirmation</title>
 </head>
 <body>
-    <h1>Confirm Your Order</h1>
+  <h1>Order Confirmation</h1>
+  {% if order_data %}
     <ul>
-        {% set total_points = 0 %}
-        {% for item, qty in order_data.items() %}
-            {% if qty|int > 0 %}
-                {% set item_points = item_lookup[item]['points'] * qty|int %}
-                <li>{{ item }} — Qty: {{ qty }} ({{ item_points }} pts)</li>
-                {% set total_points = total_points + item_points %}
-            {% endif %}
-        {% endfor %}
+      {% for item, qty in order_data.items() %}
+        <li>{{ item }} — Quantity: {{ qty }}</li>
+      {% endfor %}
     </ul>
-
-    <p><strong>Total Points:</strong> {{ total_points }}</p>
-
-    <form action="/order" method="get" style="display:inline;">
-        <button type="submit">Back</button>
-    </form>
-
-    <form action="/confirm_order" method="post" style="display:inline;">
-        <button type="submit">Confirm Order</button>
-    </form>
+  {% else %}
+    <p>No items ordered.</p>
+  {% endif %}
+  <a href="/">Back to order</a>
 </body>
 </html>
