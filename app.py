@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request  # <- add request
+from flask import Flask, render_template, request
 
 item_lookup = {
     'coal': {'points': 1, 'cat': 'mining'},
@@ -18,8 +18,8 @@ item_lookup = {
     'spell crystal': {'points': 4, 'cat': 'mining'},
     'bone': {'points': 1, 'cat': 'hunting'},
     'feathers': {'points': 1, 'cat': 'hunting'},
-    'honey': {'points': 1, 'cat': 'hunting', 'expiration': '1 month'},
-    'food': {'points': 1, 'cat': 'hunting', 'expiration': '1 month'},
+    'honey': {'points': 1, 'cat': 'hunting'},
+    'food': {'points': 1, 'cat': 'hunting'},
     'soft pelt': {'points': 2, 'cat': 'hunting'},
     'demon blood': {'points': 2, 'cat': 'hunting'},
     'large hide': {'points': 3, 'cat': 'hunting'},
@@ -40,8 +40,17 @@ item_lookup = {
 app = Flask(__name__)
 
 def categorize_items(items):
-    # Minimal placeholder, just returns empty dict for now
-    return {}
+    categories = {}
+    for name, info in items.items():
+        cat = info['cat']
+        if cat not in categories:
+            categories[cat] = []
+        categories[cat].append({'name': name, 'points': info['points']})
+    
+    # Sort each category by points
+    for cat_items in categories.values():
+        cat_items.sort(key=lambda x: x['points'])
+    return categories
 
 @app.route('/')
 def index():
